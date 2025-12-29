@@ -1,0 +1,112 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL",
+    "meta": {
+        "version": "PLCN_v3",
+        "update_url": "https://raw.githubusercontent.com/WamuuWasAwaken/custom-pelican-eggs/refs/heads/main/minecraft/fabric.json"
+    },
+    "exported_at": "2025-12-29T12:11:42+00:00",
+    "name": "Fabric",
+    "author": "WamuuWasAwaken",
+    "uuid": "78b02ebb-fec8-49c5-943c-ca4aa117b693",
+    "description": "Fabric is a modular modding toolchain targeting Minecraft 1.14 and above, including snapshots.",
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0BAMAAAA5+MK5AAAAGFBMVEUAAADb0LTGvKW8spyuppSakn6Aem04NCogwuCRAAAAAXRSTlMAQObYZgAAAo1JREFUeNrt2zFOw0AQhlF3rg0FNbkBSpEakSMQcQPqBITm+nRIM4VHVkDG8L56m7ftvztIkiRJkiRJkiRJkrTJxsid0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0Ychcpcpdxc5dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHT0r952ufspF7kzOjo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ovpfpo+Ra/b0932uOY6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6OvmF6P6BPpca2zz1MuSiho6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6P/UnqUGlvzX73WvDyI+c7o6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6OvSx0q9qpvdfIV6iNxrCR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR19ZXrkLlcM6H23xdrQa0MJHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHf2H6WPkjrnHbx3Q7xv6wsEcHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR19Lfop93zMTcvaL3s7MJTQ0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0Vv6qkXu45Q7lpbRD82Ajo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6+Hfry+b1exVOxdlR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR09Ja+4WL+Kl4ih46Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6O/i/ptZhvKKGjo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojt3RJkiRJkiRJkiRJkjbRJ0KLYiuU9T5SAAAAAElFTkSuQmCC",
+    "tags": [
+        "minecraft"
+    ],
+    "features": [
+        "eula",
+        "java_version",
+        "pid_limit"
+    ],
+    "docker_images": {
+        "Java 21": "ghcr.io/pelican-eggs/yolks:java_21",
+        "Java 17": "ghcr.io/pelican-eggs/yolks:java_17",
+        "Java 16": "ghcr.io/pelican-eggs/yolks:java_16",
+        "Java 11": "ghcr.io/pelican-eggs/yolks:java_11",
+        "Java 8": "ghcr.io/pelican-eggs/yolks:java_8"
+    },
+    "file_denylist": [],
+    "startup_commands": {
+        "Default": "java -Xms128M $( [ \"{{SERVER_MEMORY}}\" != \"0\" ] && echo \"-Xmx{{SERVER_MEMORY}}M\" ) -XX:MaxRAMPercentage=95.0 -jar {{SERVER_JARFILE}}"
+    },
+    "config": {
+        "files": "{\n    \"server.properties\": {\n        \"parser\": \"properties\",\n        \"find\": {\n            \"server-ip\": \"0.0.0.0\",\n            \"enable-query\": \"true\",\n            \"server-port\": \"{{PORT}}\"\n        }\n    }\n}",
+        "startup": "{\n    \"done\": \")! For help, type \",\n    \"userInteraction\": [\n        \"Go to eula.txt for more info.\"\n    ]\n}",
+        "logs": "{}",
+        "stop": "stop"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\r\n# Fabric MC Installation Script\r\n#\r\n# Server Files: /mnt/server\r\napt update\r\napt install -y curl jq unzip dos2unix wget\r\nmkdir -p /mnt/server\r\ncd /mnt/server\r\n\r\n# Enable snapshots\r\nif [ -z \"$MC_VERSION\" ] || [ \"$MC_VERSION\" == \"latest\" ]; then\r\n  MC_VERSION=$(curl -sSL https://meta.fabricmc.net/v2/versions/game | jq -r '.[] | select(.stable== true )|.version' | head -n1)\r\nelif [ \"$MC_VERSION\" == \"snapshot\" ]; then\r\n  MC_VERSION=$(curl -sSL https://meta.fabricmc.net/v2/versions/game | jq -r '.[] | select(.stable== false )|.version' | head -n1)\r\nfi\r\n\r\nif [ -z \"$FABRIC_VERSION\" ] || [ \"$FABRIC_VERSION\" == \"latest\" ]; then\r\n  FABRIC_VERSION=$(curl -sSL https://meta.fabricmc.net/v2/versions/installer | jq -r '.[0].version')\r\nfi\r\n\r\nif [ -z \"$LOADER_VERSION\" ] || [ \"$LOADER_VERSION\" == \"latest\" ]; then\r\n  LOADER_VERSION=$(curl -sSL https://meta.fabricmc.net/v2/versions/loader | jq -r '.[] | select(.stable== true )|.version' | head -n1)\r\nelif [ \"$LOADER_VERSION\" == \"snapshot\" ]; then\r\n  LOADER_VERSION=$(curl -sSL https://meta.fabricmc.net/v2/versions/loader | jq -r '.[] | select(.stable== false )|.version' | head -n1)\r\nfi\r\n\r\nwget -O fabric-installer.jar https://maven.fabricmc.net/net/fabricmc/fabric-installer/$FABRIC_VERSION/fabric-installer-$FABRIC_VERSION.jar\r\njava -jar fabric-installer.jar server -mcversion $MC_VERSION -loader $LOADER_VERSION -downloadMinecraft\r\nmv server.jar minecraft-server.jar\r\nmv fabric-server-launch.jar server.jar\r\necho \"serverJar=minecraft-server.jar\" > fabric-server-launcher.properties\r\necho -e \"Install Complete\"",
+            "container": "openjdk:26-ea-11-jdk-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Fabric Loader Version",
+            "description": "The version of Fabric Loader to install.",
+            "env_variable": "LOADER_VERSION",
+            "default_value": "latest",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": [
+                "required",
+                "string",
+                "between:3,15"
+            ],
+            "sort": 1
+        },
+        {
+            "name": "Fabric Version",
+            "description": "The version of Fabric to install.",
+            "env_variable": "FABRIC_VERSION",
+            "default_value": "latest",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": [
+                "required",
+                "string",
+                "between:3,15"
+            ],
+            "sort": 2
+        },
+        {
+            "name": "Minecraft Version",
+            "description": "The version of Minecraft to install. Use \"latest\" to install the latest version, or use \"snapshot\" to install the latest snapshot.",
+            "env_variable": "MC_VERSION",
+            "default_value": "latest",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": [
+                "required",
+                "string",
+                "between:3,15"
+            ],
+            "sort": 3
+        },
+        {
+            "name": "Server Jar File",
+            "description": "The name of the server jarfile to run the server with.",
+            "env_variable": "SERVER_JARFILE",
+            "default_value": "server.jar",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": [
+                "required",
+                "regex:/^([\\w\\d._-]+)(\\.jar)$/"
+            ],
+            "sort": 4
+        },
+        {
+            "name": "Server Port",
+            "description": "The port on which the Fabric server is exposed.",
+            "env_variable": "PORT",
+            "default_value": "25565",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": [],
+            "sort": 5
+        }
+    ]
+}
